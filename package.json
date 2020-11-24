@@ -19,9 +19,12 @@
   },
   "homepage": "https://github.com/azurealstn/cms#readme",
   "dependencies": {
+    "@material-ui/icons": "^4.9.1",
+    "axios": "^0.21.0",
     "body-parser": "^1.19.0",
     "concurrently": "^5.3.0",
     "express": "^4.17.1",
+    "multer": "^1.4.2",
     "mysql": "^2.18.1"
   },
   "devDependencies": {
