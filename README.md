@@ -2,6 +2,8 @@
 
 - 설명: 고객을 관리할 수 있는 고객 관리 시스템 (클래스형 컴포넌트로 구현)
 
+![캡처](https://user-images.githubusercontent.com/55525868/100127212-3d2fad80-2ec2-11eb-9d1b-52a9dd5ab65d.PNG)
+
 ## 기술 스택
 
 - react, material ui, mysql
