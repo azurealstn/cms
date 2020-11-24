@@ -1,84 +1,98 @@
-import './App.css';
+import React, { Component } from 'react';
 import Customer from './components/Customer';
-import Table from '@material-ui/core/Table';
-import Paper from '@material-ui/core/Paper';
-import TableHead from '@material-ui/core/TableHead';
-import TableBody from '@material-ui/core/TableBody';
-import TableRow from '@material-ui/core/TableRow';
-import TableCell from '@material-ui/core/TableCell';
 import { withStyles } from '@material-ui/core/styles';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import Paper from '@material-ui/core/Paper';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 const styles = (theme) => ({
   root: {
     width: '100%',
-    marginTop: theme.spacing.unit * 3,
+    marginTop: theme.spacing(3),
     overflowX: 'auto',
   },
   table: {
     minWidth: 1080,
   },
+  progress: {
+    margin: theme.spacing(2),
+  },
 });
 
-const customers = [
-  {
-    id: 1,
-    image: 'https://placeimg.com/64/64/any',
-    name: '채민수',
-    birthday: '950502',
-    gender: '남자',
-    job: '대학생',
-  },
-  {
-    id: 2,
-    image: 'https://placeimg.com/64/64/any',
-    name: '채민수22',
-    birthday: '950502222',
-    gender: '남자22',
-    job: '대학생22',
-  },
-  {
-    id: 3,
-    image: 'https://placeimg.com/64/64/any',
-    name: '채민수3',
-    birthday: '95050233',
-    gender: '남자33',
-    job: '대학생33',
-  },
-];
+class App extends Component {
+  state = {
+    customers: '',
+    completed: 0, //초기화 (ProgressBar는 0%~100%까지 진행 )
+  };
 
-function App() {
-  const { classes } = this.props;
-  return (
-    <Paper className={classes.root}>
-      <Table className={classes.table}>
-        <TableHead>
-          <TableRow>
-            <TableCell>번호</TableCell>
-            <TableCell>이미지</TableCell>
-            <TableCell>이름</TableCell>
-            <TableCell>생년월일</TableCell>
-            <TableCell>성별</TableCell>
-            <TableCell>직업</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {customers.map((c) => {
-            return (
-              <Customer
-                key={c.id}
-                id={c.id}
-                image={c.image}
-                name={c.name}
-                birthday={c.birthday}
-                gender={c.gender}
-                job={c.job}
-              />
-            );
-          })}
-        </TableBody>
-      </Table>
-    </Paper>
-  );
+  componentDidMount() {
+    this.timer = setInterval(this.progress, 20);
+    this.getApi()
+      .then((res) => this.setState({ customers: res }))
+      .catch((err) => console.log(err));
+  }
+
+  getApi = async () => {
+    const response = await fetch('/api/customers');
+    const body = await response.json();
+    return body;
+  };
+
+  progress = () => {
+    const { completed } = this.state;
+    this.setState({ completed: completed >= 100 ? 0 : completed + 1 });
+  };
+
+  render() {
+    const { classes } = this.props;
+    return (
+      <Paper className={classes.root}>
+        <Table className={classes.table}>
+          <TableHead>
+            <TableRow>
+              <TableCell>번호</TableCell>
+              <TableCell>이미지</TableCell>
+              <TableCell>이름</TableCell>
+              <TableCell>생일</TableCell>
+              <TableCell>성별</TableCell>
+              <TableCell>직업</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {this.state.customers ? (
+              this.state.customers.map((customer) => {
+                return (
+                  <Customer
+                    key={customer.id}
+                    id={customer.id}
+                    image={customer.image}
+                    name={customer.name}
+                    birthday={customer.birthday}
+                    gender={customer.gender}
+                    job={customer.job}
+                  />
+                );
+              })
+            ) : (
+              <TableRow>
+                <TableCell colSpan="6" align="center">
+                  <CircularProgress
+                    className={classes.progress}
+                    variant="determinate"
+                    value={this.state.completed}
+                  />
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </Paper>
+    );
+  }
 }
 
 export default withStyles(styles)(App);
